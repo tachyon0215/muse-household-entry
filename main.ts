@@ -1,36 +1,56 @@
-// A working best-site-01 entry (Node 22, standard library only): the site is this directory's app/ folder, plain
-// static files a browser opens at app/index.html (ES modules, CSS, no build step), its content held in its own files:
-// nothing it runs, styles or shows loads over the network. The program hands it in: it copies app/ and screenshots/
-// from beside this file to /output and writes /output/dossier.json, the summary the judge reads (your screenshots, the
-// first load's files and bytes, and your source), with the vendored make.fun library. Leave vendor/makefun-frontend.ts
-// as it is: the scorer requires dossier.json to be byte for byte what its own copy writes.
+// Entry point for the Kakeibo Ledger make.fun submission.
 //
-// A starting point, not a winner: a plain recipe collection, a list of recipes and a page for each. Build the site the
-// brief asks for in app/ (its content, ease of use, a phone layout, its look), put 3 or 4 PNG or JPEG screenshots of
-// it running in screenshots/ (the first by name is the cover; one may be a 390 x 844 phone view; shots.json says which
-// views this starter's were taken of), and run it.
+// Running this file assembles the deliverable in one place: it mirrors the
+// static site (everything under app/) and the captured screenshots into the
+// output directory, then asks the vendored make.fun frontend helper to
+// summarise that directory into a dossier.json manifest. The grader reads
+// the manifest to see what the entry contains, so the copy has to be a
+// faithful, complete replica of the two source folders.
 //
-// Serve it locally with `node serve.ts`, then open http://localhost:8080.
-// Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
-//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+// The destination is the MAKEFUN_OUTPUT_DIR environment variable when set,
+// falling back to /output, which is where the grading environment expects
+// the finished entry to appear.
 
 import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-frontend.ts';
 
-const here = fileURLToPath(new URL('.', import.meta.url));
-const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+// Absolute path of the folder this file lives in, derived from the module
+// URL so the program works no matter where it is invoked from.
+const repoRoot = fileURLToPath(new URL('.', import.meta.url));
 
-mkdirSync(out, { recursive: true });
-cpSync(join(here, 'app'), join(out, 'app'), { recursive: true });
-mkdirSync(join(out, 'screenshots'), { recursive: true });
-if (existsSync(join(here, 'screenshots'))) cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
+// Where the assembled entry should be written.
+const targetDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-// The scorer's own caps (reference/gate.json): only text_max_bytes shapes the bytes; the others refuse an entry the
-// scorer would refuse (more than 4 screenshots or one over 256 KiB; more than 993 files and directories in app/ or
-// 16 MiB of app files: app/ counts beside /output's own 1000-entry cap, its screenshots/ and dossier.json).
-writeFileSync(
-  join(out, 'dossier.json'),
-  buildDossier(out, { text_max_bytes: 163840, screenshots: { max: 4, max_bytes: 262144 }, app_max_files: 993, app_max_bytes: 16777216 }),
-);
+// Copy one directory tree from the repo into the output directory. When the
+// source folder is absent there is nothing to mirror, so the step is
+// skipped quietly instead of failing the whole run. Nested folders and
+// their contents come along untouched, preserving the site's structure.
+function mirrorIntoOutput(folderName: string): void {
+  const source = join(repoRoot, folderName);
+  if (!existsSync(source)) {
+    return;
+  }
+  cpSync(source, join(targetDir, folderName), { recursive: true });
+}
+
+mkdirSync(targetDir, { recursive: true });
+
+// The screenshots folder is created up front so the output layout is stable
+// even before anything is copied into it.
+mkdirSync(join(targetDir, 'screenshots'), { recursive: true });
+
+mirrorIntoOutput('app');
+mirrorIntoOutput('screenshots');
+
+// Describe the assembled output and store the manifest next to the copied
+// files. The limits below cap how much text, imagery, and app payload the
+// dossier is allowed to account for.
+const manifest = buildDossier(targetDir, {
+  text_max_bytes: 163840,
+  screenshots: { max: 4, max_bytes: 262144 },
+  app_max_files: 993,
+  app_max_bytes: 16777216,
+});
+writeFileSync(join(targetDir, 'dossier.json'), manifest);
