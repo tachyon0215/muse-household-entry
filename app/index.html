@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kakeibo Ledger — Household Budget</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark">¥$</span> Kakeibo Ledger</div>
+  <div class="month-switch" role="group" aria-label="Month">
+    <button id="prevMonth" aria-label="Previous month">‹</button>
+    <span id="monthLabel">November 2026</span>
+    <button id="nextMonth" aria-label="Next month">›</button>
+  </div>
+</header>
+<nav class="tabs" aria-label="Sections">
+  <a href="#/" data-nav="overview">Overview</a>
+  <a href="#/transactions" data-nav="transactions">Transactions</a>
+  <a href="#/budgets" data-nav="budgets">Budgets</a>
+  <a href="#/bills" data-nav="bills">Bills</a>
+  <a href="#/goals" data-nav="goals">Savings goals</a>
+  <a href="#/reports" data-nav="reports">Reports</a>
+</nav>
+<main id="view" tabindex="-1"></main>
+<footer class="foot">
+  <p>Kakeibo Ledger — a household budget book for <span id="footHousehold"></span>. All figures are stored in this site's own files; nothing leaves your device. Amounts in USD.</p>
+</footer>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
