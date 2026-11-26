@@ -67,6 +67,39 @@ window.HOUSEHOLD = {
       ["2026-11-26", "Gift — grandma's birthday", "shopping", -45.00]
     ]
   },
+  // Standing monthly pattern: the entries that arrive every month, used to
+  // project future months (December 2026, January 2027) so the book never
+  // runs into an empty page. Amounts marked "(estimate)" are the household's
+  // best guess for bills that vary month to month.
+  recurring: [
+    { day: 1, description: "Rent — Maple Street apartment", category: "housing", amount: -1600 },
+    { day: 1, description: "Salary — Alex (Northwind Studio)", category: "income", amount: 3850 },
+    { day: 3, description: "Home insurance — monthly", category: "housing", amount: -48.50 },
+    { day: 4, description: "Electric bill — City Power (estimate)", category: "utilities", amount: -112.00 },
+    { day: 7, description: "Fuel — Route 9 petrol station", category: "transport", amount: -60.00 },
+    { day: 9, description: "Piano lesson — Mia", category: "kids", amount: -140.00 },
+    { day: 10, description: "Salary — Jordan (part-time, library)", category: "income", amount: 1240 },
+    { day: 11, description: "Streaming — Filmhouse family plan", category: "fun", amount: -17.99 },
+    { day: 17, description: "Internet — Fibreline 300", category: "utilities", amount: -54.99 },
+    { day: 23, description: "Water bill — City Water (estimate)", category: "utilities", amount: -43.00 },
+    { day: 24, description: "Bus passes — monthly x2", category: "transport", amount: -110.00 },
+    { day: 28, description: "Mobile phones x2", category: "utilities", amount: -68.00 }
+  ],
+  // One-off items the household already expects in a projected month,
+  // on top of the standing pattern and the weekly grocery run.
+  projectionExtras: {
+    "2026-12": [
+      ["2026-12-13", "Pharmacy — prescriptions", "health", -44.20],
+      ["2026-12-15", "Holiday gifts — family & teachers", "shopping", -186.00],
+      ["2026-12-19", "Dinner — Sakura Ramen (solstice treat)", "dining", -71.50],
+      ["2026-12-22", "Holiday groceries — GreenMart big shop", "groceries", -228.60],
+      ["2026-12-29", "Cinema — holiday matinee", "fun", -48.00]
+    ],
+    "2027-01": [
+      ["2027-01-06", "School supplies — new term", "kids", -57.80],
+      ["2027-01-16", "Dentist — Alex check-up", "health", -95.00]
+    ]
+  },
   bills: [
     { name: "Rent — Maple Street apartment", amount: 1600, due: "1st", paidNov: true },
     { name: "Electric — City Power", amount: 104.80, due: "4th", paidNov: true },

@@ -1,11 +1,11 @@
-// Entry point for the Kakeibo Ledger make.fun submission.
+// Kakeibo Ledger — the program that hands the entry in.
 //
-// Running this file assembles the deliverable in one place: it mirrors the
-// static site (everything under app/) and the captured screenshots into the
-// output directory, then asks the vendored make.fun frontend helper to
-// summarise that directory into a dossier.json manifest. The grader reads
-// the manifest to see what the entry contains, so the copy has to be a
-// faithful, complete replica of the two source folders.
+// One run does the whole handover: the static site under app/ and the
+// screenshots beside it are copied across to the output directory, and the
+// vendored make.fun frontend helper then reads that directory back and
+// writes its summary as dossier.json. That manifest is how the grader
+// inventories the entry, which is why the copy step has to reproduce both
+// folders exactly — nothing dropped, nothing renamed.
 //
 // The destination is the MAKEFUN_OUTPUT_DIR environment variable when set,
 // falling back to /output, which is where the grading environment expects
@@ -44,9 +44,9 @@ mkdirSync(join(targetDir, 'screenshots'), { recursive: true });
 mirrorIntoOutput('app');
 mirrorIntoOutput('screenshots');
 
-// Describe the assembled output and store the manifest next to the copied
-// files. The limits below cap how much text, imagery, and app payload the
-// dossier is allowed to account for.
+// Last step: summarise what was assembled and drop the manifest in beside
+// the copied files. The limits passed here bound how much text, imagery,
+// and app payload the dossier will account for.
 const manifest = buildDossier(targetDir, {
   text_max_bytes: 163840,
   screenshots: { max: 4, max_bytes: 262144 },
